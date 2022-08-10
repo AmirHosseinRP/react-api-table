@@ -4,15 +4,16 @@ import SortIcon from '@mui/icons-material/Sort';
 import SortByAlphaIcon from '@mui/icons-material/SortByAlpha';
 
 import {
+    Box,
     Button,
-    CircularProgress,
-    FormControl,
+    CircularProgress, Collapse,
+    FormControl, FormControlLabel,
     InputLabel,
     MenuItem,
     Pagination,
     Paper,
     Select,
-    Stack,
+    Stack, Switch,
     Table,
     TableBody,
     TableCell,
@@ -38,12 +39,7 @@ function DataTable() {
     const [filter, setFilter] = useState('');
     const [filterValue, setFilterValue] = useState('');
     const [sort, setSort] = useState('id');
-
-    // const [firstNameFilter, setFirstNameFilter] = useState("");
-    // const [lastNameFilter, setLastNameFilter] = useState("");
-    // const [ageFilter, setAgeFilter] = useState('');
-    // const [showFilters, setShowFilters] = useState(false);
-
+    const [isFilterSectionOpen, setIsFilterSectionOpen] = useState(false);
 
     const handleChangePage = (event, newPage: number) => {
         setPage(newPage - 1);
@@ -167,32 +163,44 @@ function DataTable() {
     const deletePost = () => {
         deleteUser().then(() => console.log('filtered'));
     }
+
+    const handleFilterSection = () => {
+        setIsFilterSectionOpen((prev) => !prev);
+    };
+
     return (
         <>
-            <Stack direction={'row'} spacing={3} sx={{padding: '10px 10px 17px 10px'}}>
-                <FormControl fullWidth sx={{width: '25%'}}>
-                    <InputLabel id="demo-simple-select-label">Filter</InputLabel>
-                    <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={filter}
-                        label="Filter"
-                        onChange={handleDropDownChange}
-                    >
-                        <MenuItem value={'first_name'}>First Name</MenuItem>
-                        <MenuItem value={'last_name'}>Last Name</MenuItem>
-                        <MenuItem value={'age'}>Age</MenuItem>
-                    </Select>
-                </FormControl>
-                <TextField
-                    label="Search"
-                    value={filterValue}
-                    onChange={handleSearchFiled}
-                    variant="outlined"
-                    sx={{width: '25%'}}
+            <Box sx={{padding:'10px 0 10px 20px',margin:'0 10px 10px 10px',backgroundColor:'#ebebeb',borderRadius:'5px'}}>
+                <FormControlLabel
+                    control={<Switch checked={isFilterSectionOpen} onChange={handleFilterSection}/>}
+                    label="Add Filter"
                 />
-                <Button variant={"contained"} sx={{width: '10%'}} onClick={deletePost}>Submit</Button>
-            </Stack>
+                <Collapse in={isFilterSectionOpen}>
+                    <Stack direction={'row'} spacing={3} sx={{padding: '10px 10px 17px 10px'}}>
+                        <FormControl fullWidth sx={{width: '25%'}}>
+                            <InputLabel id="demo-simple-select-label">Filter</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={filter}
+                                label="Filter"
+                                onChange={handleDropDownChange}
+                            >
+                                <MenuItem value={'first_name'}>First Name</MenuItem>
+                                <MenuItem value={'last_name'}>Last Name</MenuItem>
+                                <MenuItem value={'age'}>Age</MenuItem>
+                            </Select>
+                        </FormControl>
+                        <TextField
+                            label="Search"
+                            value={filterValue}
+                            onChange={handleSearchFiled}
+                            variant="outlined"
+                        />
+                        <Button variant={"contained"} sx={{width: '10%'}} onClick={deletePost}>Submit</Button>
+                    </Stack>
+                </Collapse>
+            </Box>
             <Paper sx={{width: '100%', overflow: 'hidden'}}>
                 <TableContainer sx={{maxHeight: 440}}>
                     <Table stickyHeader aria-label="sticky table">
@@ -204,18 +212,20 @@ function DataTable() {
                                     top: '4px',
                                     left: '2px'
                                 }}/></StyledTableCell>
-                                <StyledTableCell onClick={() => sortBy('first_name')}>First Name <SortByAlphaIcon sx={{
-                                    fontSize: '20px',
-                                    position: 'relative',
-                                    top: '5px',
-                                    left: '2px'
-                                }}/></StyledTableCell>
-                                <StyledTableCell onClick={() => sortBy('last_name')}>Last Name <SortByAlphaIcon sx={{
-                                    fontSize: '20px',
-                                    position: 'relative',
-                                    top: '5px',
-                                    left: '2px'
-                                }}/></StyledTableCell>
+                                <StyledTableCell onClick={() => sortBy('first_name')}>First Name <SortByAlphaIcon
+                                    sx={{
+                                        fontSize: '20px',
+                                        position: 'relative',
+                                        top: '5px',
+                                        left: '2px'
+                                    }}/></StyledTableCell>
+                                <StyledTableCell onClick={() => sortBy('last_name')}>Last Name <SortByAlphaIcon
+                                    sx={{
+                                        fontSize: '20px',
+                                        position: 'relative',
+                                        top: '5px',
+                                        left: '2px'
+                                    }}/></StyledTableCell>
                                 <StyledTableCell onClick={() => sortBy('age')}>Age <SortIcon sx={{
                                     fontSize: '20px',
                                     position: 'relative',
