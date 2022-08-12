@@ -6,8 +6,8 @@ import {
     Box,
     Button,
     CircularProgress, Collapse,
-    FormControl, FormControlLabel,
-    InputLabel,
+    FormControl, FormControlLabel, IconButton,
+    InputLabel, List, ListItem, ListItemText,
     MenuItem,
     Pagination,
     Paper,
@@ -25,7 +25,7 @@ import {
     Typography
 } from "@mui/material";
 import {styled} from '@mui/material/styles';
-
+import CloseIcon from '@mui/icons-material/Close';
 
 function DataTable() {
 
@@ -38,6 +38,7 @@ function DataTable() {
     const [filterValue, setFilterValue] = useState('');
     const [sort, setSort] = useState('id');
     const [isFilterSectionOpen, setIsFilterSectionOpen] = useState(false);
+    const [allFilters, setAllFilters] = useState([]);
 
     const handleChangePage = (event, newPage: number) => {
         setPage(newPage - 1);
@@ -70,6 +71,14 @@ function DataTable() {
         },
     }));
 
+    const filterPillStyle = {
+        backgroundColor: '#188dff',
+        color:'white',
+        padding:'0 5px 0 15px',
+        width:'200px',
+        borderRadius:'20px',
+    }
+
     const getUsers = async () => {
         try {
             let response = await axios.get('/data/usersData.json');
@@ -81,12 +90,12 @@ function DataTable() {
     };
 
     useEffect(() => {
-        if (filterValue === '') {
-            if (isLoading) {
-                setTimeout(() => {
-                    getUsers().then(() => console.log('ok'));
-                }, 2000);
-            } else getUsers().then(() => console.log('reloaded'));
+        // if (filterValue === '') {
+        if (isLoading) {
+            setTimeout(() => {
+                getUsers().then(() => console.log('ok'));
+            }, 2000);
+            // } else getUsers().then(() => console.log('reloaded'));
         }
     }, [filterValue, isLoading]);
 
@@ -115,10 +124,13 @@ function DataTable() {
                     // eslint-disable-next-line array-callback-return
                     users.filter((user) => {
                         if (filter === 'first_name') {
+                            setAllFilters([...allFilters, `${filter}: ${filterValue}`]);
                             return user.first_name.toLowerCase().includes(filterValue);
                         } else if (filter === 'last_name') {
+                            setAllFilters([...allFilters, `${filter}: ${filterValue}`]);
                             return user.last_name.toLowerCase().includes(filterValue);
                         } else if (filter === 'age') {
+                            setAllFilters([...allFilters, `${filter}: ${filterValue}`]);
                             return user.age.includes(filterValue);
                         }
                     })
@@ -160,11 +172,19 @@ function DataTable() {
 
     const deletePost = () => {
         deleteUser().then(() => console.log('filtered'));
+        setFilter('');
+        setFilterValue('');
+        console.log(allFilters);
     };
 
     const handleFilterSection = () => {
         setIsFilterSectionOpen((prev) => !prev);
     };
+
+    const deleteFilter = (i) => {
+        setAllFilters((products) => products.filter((_, index) => index !== i));
+        getUsers().then(()=>console.log('loaded'));
+    }
 
     return (
         <>
@@ -193,7 +213,7 @@ function DataTable() {
                         spacing={3}
                         sx={{
                             padding: '10px 10px 17px 10px',
-                            height:'39px'
+                            height: '39px'
                         }}
                     >
                         <FormControl
@@ -249,6 +269,22 @@ function DataTable() {
                             Submit
                         </Button>
                     </Stack>
+                    <List>
+                        <Stack direction={'row'}>
+                            {allFilters.map((filter,index) => {
+                                return <ListItem key={index} sx={filterPillStyle}>
+                                    <ListItemText
+                                        sx={{
+                                            '& .MuiTypography-root':{
+                                                fontSize:'13px',
+                                            }
+                                        }}
+                                    >{filter}</ListItemText>
+                                    <IconButton onClick={()=>deleteFilter(index)}><CloseIcon sx={{fontSize:'18px',color:'white'}}/></IconButton>
+                                </ListItem>
+                            })}
+                        </Stack>
+                    </List>
                 </Collapse>
             </Box>
             <Paper
