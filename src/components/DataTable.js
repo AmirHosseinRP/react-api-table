@@ -73,10 +73,11 @@ function DataTable() {
 
     const filterPillStyle = {
         backgroundColor: '#188dff',
-        color:'white',
-        padding:'0 5px 0 15px',
-        width:'200px',
-        borderRadius:'20px',
+        color: 'white',
+        padding: '0 5px 0 15px',
+        width: 'auto',
+        marginLeft: '10px',
+        borderRadius: '20px',
     }
 
     const getUsers = async () => {
@@ -90,12 +91,10 @@ function DataTable() {
     };
 
     useEffect(() => {
-        // if (filterValue === '') {
         if (isLoading) {
             setTimeout(() => {
                 getUsers().then(() => console.log('ok'));
             }, 2000);
-            // } else getUsers().then(() => console.log('reloaded'));
         }
     }, [filterValue, isLoading]);
 
@@ -117,30 +116,37 @@ function DataTable() {
         setPaginationNumberCount(n);
     }, [rowsPerPage, users.length]);
 
-    const deleteUser = async () => {
-        if (filter !== '') {
-            try {
-                setUsers(
-                    // eslint-disable-next-line array-callback-return
-                    users.filter((user) => {
-                        if (filter === 'first_name') {
-                            setAllFilters([...allFilters, `${filter}: ${filterValue}`]);
-                            return user.first_name.toLowerCase().includes(filterValue);
-                        } else if (filter === 'last_name') {
-                            setAllFilters([...allFilters, `${filter}: ${filterValue}`]);
-                            return user.last_name.toLowerCase().includes(filterValue);
-                        } else if (filter === 'age') {
-                            setAllFilters([...allFilters, `${filter}: ${filterValue}`]);
-                            return user.age.includes(filterValue);
-                        }
-                    })
-                );
-            } catch (error) {
-                console.log(error);
-            }
-        } else {
-            alert('select a filter value please');
+    useEffect(() => {
+        if (allFilters.length !== 0) {
+            deleteUser().then(() => console.log('filtered'));
         }
+    }, [allFilters]);
+
+    const deleteUser = async () => {
+        allFilters.forEach((value) => {
+            console.log(value);
+            const f = value.split(': ');
+            if (f[0] !== '') {
+                try {
+                    setUsers(
+                        // eslint-disable-next-line array-callback-return
+                        users.filter((user) => {
+                            if (f[0] === 'first_name') {
+                                return user.first_name.toLowerCase().includes(f[1]);
+                            } else if (f[0] === 'last_name') {
+                                return user.last_name.toLowerCase().includes(f[1]);
+                            } else if (f[0] === 'age') {
+                                return user.age.includes(f[1]);
+                            }
+                        })
+                    );
+                } catch (error) {
+                    console.log(error);
+                }
+            } else {
+                alert('select a filter value please');
+            }
+        })
     };
 
     const sortBy = (val) => {
@@ -167,14 +173,13 @@ function DataTable() {
     };
 
     const handleSearchFiled = (event) => {
-        setFilterValue(event.target.value);
+        setFilterValue(event.target.value.toLowerCase());
     };
 
-    const deletePost = () => {
-        deleteUser().then(() => console.log('filtered'));
+    const filterData = () => {
+        setAllFilters([...allFilters, `${filter}: ${filterValue}`]);
         setFilter('');
         setFilterValue('');
-        console.log(allFilters);
     };
 
     const handleFilterSection = () => {
@@ -182,8 +187,10 @@ function DataTable() {
     };
 
     const deleteFilter = (i) => {
-        setAllFilters((products) => products.filter((_, index) => index !== i));
-        getUsers().then(()=>console.log('loaded'));
+        getUsers().then(() => console.log('refreshed'));
+        setTimeout(() => {
+            setAllFilters((products) => products.filter((_, index) => index !== i));
+        }, 10);
     }
 
     return (
@@ -261,7 +268,7 @@ function DataTable() {
                         />
                         <Button
                             variant={"contained"}
-                            onClick={deletePost}
+                            onClick={filterData}
                             sx={{
                                 width: '10%'
                             }}
@@ -271,16 +278,17 @@ function DataTable() {
                     </Stack>
                     <List>
                         <Stack direction={'row'}>
-                            {allFilters.map((filter,index) => {
+                            {allFilters.map((filter, index) => {
                                 return <ListItem key={index} sx={filterPillStyle}>
                                     <ListItemText
                                         sx={{
-                                            '& .MuiTypography-root':{
-                                                fontSize:'13px',
+                                            '& .MuiTypography-root': {
+                                                fontSize: '13px',
                                             }
                                         }}
                                     >{filter}</ListItemText>
-                                    <IconButton onClick={()=>deleteFilter(index)}><CloseIcon sx={{fontSize:'18px',color:'white'}}/></IconButton>
+                                    <IconButton onClick={() => deleteFilter(index)}><CloseIcon
+                                        sx={{fontSize: '18px', color: 'white'}}/></IconButton>
                                 </ListItem>
                             })}
                         </Stack>
