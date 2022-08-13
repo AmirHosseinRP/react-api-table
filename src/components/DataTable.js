@@ -96,7 +96,7 @@ function DataTable() {
                 getUsers().then(() => console.log('ok'));
             }, 2000);
         }
-    }, [filterValue, isLoading]);
+    }, [isLoading]);
 
     useEffect(() => {
         document.getElementById('tablePaginationRoot')
@@ -123,30 +123,33 @@ function DataTable() {
     }, [allFilters]);
 
     const deleteUser = async () => {
-        allFilters.forEach((value) => {
-            console.log(value);
-            const f = value.split(': ');
-            if (f[0] !== '') {
-                try {
-                    setUsers(
-                        // eslint-disable-next-line array-callback-return
-                        users.filter((user) => {
-                            if (f[0] === 'first_name') {
-                                return user.first_name.toLowerCase().includes(f[1]);
-                            } else if (f[0] === 'last_name') {
-                                return user.last_name.toLowerCase().includes(f[1]);
-                            } else if (f[0] === 'age') {
-                                return user.age.includes(f[1]);
-                            }
-                        })
-                    );
-                } catch (error) {
-                    console.log(error);
+        getUsers().then(() => console.log('refreshed'));
+        setTimeout(() => {
+            allFilters.forEach((value) => {
+                console.log(value);
+                const f = value.split(': ');
+                if (f[0] !== '') {
+                    try {
+                        setUsers(
+                            // eslint-disable-next-line array-callback-return
+                            users.filter((user) => {
+                                if (f[0] === 'first_name') {
+                                    return user.first_name.toLowerCase().includes(f[1]);
+                                } else if (f[0] === 'last_name') {
+                                    return user.last_name.toLowerCase().includes(f[1]);
+                                } else if (f[0] === 'age') {
+                                    return user.age.includes(f[1]);
+                                }
+                            })
+                        );
+                    } catch (error) {
+                        console.log(error);
+                    }
+                } else {
+                    alert('select a filter value please');
                 }
-            } else {
-                alert('select a filter value please');
-            }
-        })
+            })
+        }, 20);
     };
 
     const sortBy = (val) => {
@@ -187,10 +190,10 @@ function DataTable() {
     };
 
     const deleteFilter = (i) => {
-        getUsers().then(() => console.log('refreshed'));
+        getUsers().then(() => console.log('refreshed2'));
         setTimeout(() => {
             setAllFilters((products) => products.filter((_, index) => index !== i));
-        }, 10);
+        }, 20);
     }
 
     return (
