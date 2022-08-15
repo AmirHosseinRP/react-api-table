@@ -5,14 +5,17 @@ import SortByAlphaIcon from '@mui/icons-material/SortByAlpha';
 import {
     Box,
     Button,
-    CircularProgress, Collapse,
-    FormControl, FormControlLabel, IconButton,
+    CircularProgress,
+    Collapse,
+    FormControl,
+    FormControlLabel, IconButton,
     InputLabel, List, ListItem, ListItemText,
     MenuItem,
     Pagination,
     Paper,
     Select,
-    Stack, Switch,
+    Stack,
+    Switch,
     Table,
     TableBody,
     TableCell,
@@ -24,30 +27,36 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-import {styled} from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/Close';
+import {styled} from '@mui/material/styles';
 
 function DataTable() {
+
+    const dataURL = '/data/usersData.json';
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [paginationNumberCount, setPaginationNumberCount] = useState();
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [sort, setSort] = useState('id');
     const [filter, setFilter] = useState('');
     const [filterValue, setFilterValue] = useState('');
-    const [sort, setSort] = useState('id');
     const [isFilterSectionOpen, setIsFilterSectionOpen] = useState(false);
-    const [allFilters, setAllFilters] = useState([]);
-
-    const handleChangePage = (event, newPage: number) => {
-        setPage(newPage - 1);
-    };
-
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setRowsPerPage(event.target.value);
-        setPaginationNumberCount(100 / event.target.value)
-    };
+    const [allFilters, setAllFilters] = useState([
+        {
+            filterName: 'first_name',
+            filterVal: '',
+        },
+        {
+            filterName: 'last_name',
+            filterVal: '',
+        },
+        {
+            filterName: 'age',
+            filterVal: '',
+        }
+    ]);
 
     const StyledTableCell = styled(TableCell)(({theme}) => ({
         [`&.${tableCellClasses.head}`]: {
@@ -82,7 +91,7 @@ function DataTable() {
 
     const getUsers = async () => {
         try {
-            let response = await axios.get('/data/usersData.json');
+            let response = await axios.get(dataURL);
             setUsers(response.data);
         } catch (error) {
             console.log(error);
@@ -117,39 +126,41 @@ function DataTable() {
     }, [rowsPerPage, users.length]);
 
     useEffect(() => {
-        if (allFilters.length !== 0) {
-            deleteUser().then(() => console.log('filtered'));
-        }
-    }, [allFilters]);
+        allFilters.forEach((i, index) => {
+            if (i.filterVal !== '') {
+                document.getElementById(`pillNum${index}`).style.display = 'block';
+            }else {
+                document.getElementById(`pillNum${index}`).style.display = 'none';
+            }
+        })
+        fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [allFilters])
 
-    const deleteUser = async () => {
-        getUsers().then(() => console.log('refreshed'));
-        setTimeout(() => {
-            allFilters.forEach((value) => {
-                console.log(value);
-                const f = value.split(': ');
-                if (f[0] !== '') {
-                    try {
-                        setUsers(
-                            // eslint-disable-next-line array-callback-return
-                            users.filter((user) => {
-                                if (f[0] === 'first_name') {
-                                    return user.first_name.toLowerCase().includes(f[1]);
-                                } else if (f[0] === 'last_name') {
-                                    return user.last_name.toLowerCase().includes(f[1]);
-                                } else if (f[0] === 'age') {
-                                    return user.age.includes(f[1]);
-                                }
-                            })
-                        );
-                    } catch (error) {
-                        console.log(error);
-                    }
-                } else {
-                    alert('select a filter value please');
-                }
+    const fetchData = () => {
+        fetch(dataURL)
+            .then(res => res.json())
+            .then((data) => {
+                setUsers(data.filter((user) => {
+                    debugger;
+                    return user.first_name.toLowerCase().includes(allFilters[0].filterVal) &&
+                        user.last_name.toLowerCase().includes(allFilters[1].filterVal) &&
+                        user.age.toLowerCase().includes(allFilters[2].filterVal);
+                }))
             })
-        }, 20);
+            .catch((error) => {
+                console.log(error);
+            })
+    };
+
+    const handleChangePage = (event, newPage: number) => {
+        setPage(newPage - 1);
+    };
+
+    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setRowsPerPage(event.target.value);
+        setPaginationNumberCount(100 / event.target.value)
+        setPage(0);
     };
 
     const sortBy = (val) => {
@@ -179,21 +190,33 @@ function DataTable() {
         setFilterValue(event.target.value.toLowerCase());
     };
 
-    const filterData = () => {
-        setAllFilters([...allFilters, `${filter}: ${filterValue}`]);
-        setFilter('');
-        setFilterValue('');
-    };
-
     const handleFilterSection = () => {
         setIsFilterSectionOpen((prev) => !prev);
     };
 
+    const updateFilters = (value, index) => {
+        let newArr = [...allFilters];
+        newArr[index].filterVal = value;
+        setAllFilters(newArr);
+    }
+
+    const filterData = () => {
+        if (filter === 'first_name') {
+            updateFilters(filterValue, 0);
+        } else if (filter === 'last_name') {
+            updateFilters(filterValue, 1);
+        } else if (filter === 'age') {
+            updateFilters(filterValue, 2);
+        } else {
+            alert('Select a Filter!')
+        }
+        setFilter('');
+        setFilterValue('');
+    };
+
     const deleteFilter = (i) => {
-        getUsers().then(() => console.log('refreshed2'));
-        setTimeout(() => {
-            setAllFilters((products) => products.filter((_, index) => index !== i));
-        }, 20);
+       updateFilters('',i);
+        console.log(i,allFilters)
     }
 
     return (
@@ -263,7 +286,7 @@ function DataTable() {
                             </Select>
                         </FormControl>
                         <TextField
-                            label="Search"
+                            label={`Search for ${filter}`}
                             value={filterValue}
                             onChange={handleSearchFiled}
                             variant="outlined"
@@ -282,16 +305,19 @@ function DataTable() {
                     <List>
                         <Stack direction={'row'}>
                             {allFilters.map((filter, index) => {
-                                return <ListItem key={index} sx={filterPillStyle}>
+                                return <ListItem id={`pillNum${index}`} key={index} sx={filterPillStyle}>
                                     <ListItemText
                                         sx={{
                                             '& .MuiTypography-root': {
                                                 fontSize: '13px',
                                             }
                                         }}
-                                    >{filter}</ListItemText>
-                                    <IconButton onClick={() => deleteFilter(index)}><CloseIcon
-                                        sx={{fontSize: '18px', color: 'white'}}/></IconButton>
+                                    >
+                                        {filter.filterName} : {filter.filterVal}
+                                        <IconButton onClick={() => deleteFilter(index)}><CloseIcon
+                                            sx={{fontSize: '18px', color: 'white'}}/></IconButton>
+                                    </ListItemText>
+
                                 </ListItem>
                             })}
                         </Stack>
@@ -455,6 +481,7 @@ function DataTable() {
                         }}
                     />
                     <Pagination
+                        page={page + 1}
                         count={paginationNumberCount}
                         variant="outlined"
                         onChange={handleChangePage}
