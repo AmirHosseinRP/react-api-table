@@ -106,7 +106,7 @@ function DataTable() {
     useEffect(() => {
         if (isLoading) {
             setTimeout(() => {
-                getUsers().then(() => console.log('ok'));
+                getUsers().then();
             }, 2000);
         }
     }, [isLoading]);

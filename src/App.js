@@ -18,7 +18,7 @@ function App() {
 
     useEffect(() => {
         setTimeout(() => {
-            getUsers().then(() => console.log('ok'));
+            getUsers().then();
         }, 2000);
     }, []);
 
@@ -28,7 +28,7 @@ function App() {
                 <Route path={'/'} element={<TablePage/>}/>
                 {users.map((user) => {
                     const id = user.id;
-                    return <Route path={`detail-page/:id${id !== '' ? '' : id}`} element={<DetailPage/>}/>
+                    return <Route path={`detail-page/:id${id !== '' ? '' : id}`} element={<DetailPage/>} key={id}/>
                 })}
             </Routes>
         </BrowserRouter>

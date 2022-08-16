@@ -1,24 +1,29 @@
 import React, {useEffect, useState} from 'react';
 import {Button} from "@mui/material";
-import {Link, useLocation, useParams} from "react-router-dom";
+import {
+    Link,
+    // useLocation,
+    useParams
+} from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
 
 function DetailPage() {
     const dataURL = '/data/usersData.json';
     const [user, setUser] = useState('');
-    const location = useLocation();
-    const id = Number(location.pathname.split('/')[location.pathname.split('/').length - 1]);
+    // const location = useLocation();
+    // const id = Number(location.pathname.split('/')[location.pathname.split('/').length - 1]);
     const params = useParams()
+    // debugger;
+    const id = Number(params.id);
     useEffect(() => {
-        getUser().then(() => console.log('ok'));
-        console.log(params)
+        getUser().then();
     }, []);
 
     const getUser = async () => {
         try {
             let response = await axios.get(dataURL);
-            setUser(response.data.find(item => item.id === id));
+            setUser(response.data.find(item => id === item.id));
         } catch (error) {
             console.log(error);
         }
