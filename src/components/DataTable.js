@@ -28,7 +28,11 @@ import {
     Typography
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
+import InfoIcon from '@mui/icons-material/Info';
+import ArticleIcon from '@mui/icons-material/Article';
 import {styled} from '@mui/material/styles';
+import UserDetailModal from './UserDetailModal'
+import {Link} from "react-router-dom";
 
 function DataTable() {
 
@@ -129,7 +133,7 @@ function DataTable() {
         allFilters.forEach((i, index) => {
             if (i.filterVal !== '') {
                 document.getElementById(`pillNum${index}`).style.display = 'block';
-            }else {
+            } else {
                 document.getElementById(`pillNum${index}`).style.display = 'none';
             }
         })
@@ -142,7 +146,6 @@ function DataTable() {
             .then(res => res.json())
             .then((data) => {
                 setUsers(data.filter((user) => {
-                    debugger;
                     return user.first_name.toLowerCase().includes(allFilters[0].filterVal) &&
                         user.last_name.toLowerCase().includes(allFilters[1].filterVal) &&
                         user.age.toLowerCase().includes(allFilters[2].filterVal);
@@ -215,8 +218,8 @@ function DataTable() {
     };
 
     const deleteFilter = (i) => {
-       updateFilters('',i);
-        console.log(i,allFilters)
+        updateFilters('', i);
+        console.log(i, allFilters)
     }
 
     return (
@@ -227,38 +230,31 @@ function DataTable() {
                     margin: '0 10px 10px 10px',
                     backgroundColor: '#ebebeb',
                     borderRadius: '5px'
-                }}
-            >
+                }}>
                 <FormControlLabel
                     control={
                         <Switch
                             checked={isFilterSectionOpen}
-                            onChange={handleFilterSection}
-                        />
+                            onChange={handleFilterSection}/>
                     }
-                    label="Add Filter"
-                />
+                    label="Add Filter"/>
                 <Collapse
-                    in={isFilterSectionOpen}
-                >
+                    in={isFilterSectionOpen}>
                     <Stack
                         direction={'row'}
                         spacing={3}
                         sx={{
                             padding: '10px 10px 17px 10px',
                             height: '39px'
-                        }}
-                    >
+                        }}>
                         <FormControl
                             fullWidth
                             sx={{
                                 width: '25%'
                             }}
-                            size={"small"}
-                        >
+                            size={"small"}>
                             <InputLabel
-                                id="demo-simple-select-label"
-                            >
+                                id="demo-simple-select-label">
                                 Filter
                             </InputLabel>
                             <Select
@@ -266,21 +262,17 @@ function DataTable() {
                                 id="demo-simple-select"
                                 value={filter}
                                 label="Filter"
-                                onChange={handleDropDownChange}
-                            >
+                                onChange={handleDropDownChange}>
                                 <MenuItem
-                                    value={'first_name'}
-                                >
+                                    value={'first_name'}>
                                     First Name
                                 </MenuItem>
                                 <MenuItem
-                                    value={'last_name'}
-                                >
+                                    value={'last_name'}>
                                     Last Name
                                 </MenuItem>
                                 <MenuItem
-                                    value={'age'}
-                                >
+                                    value={'age'}>
                                     Age
                                 </MenuItem>
                             </Select>
@@ -290,15 +282,13 @@ function DataTable() {
                             value={filterValue}
                             onChange={handleSearchFiled}
                             variant="outlined"
-                            size={"small"}
-                        />
+                            size={"small"}/>
                         <Button
                             variant={"contained"}
                             onClick={filterData}
                             sx={{
                                 width: '10%'
-                            }}
-                        >
+                            }}>
                             Submit
                         </Button>
                     </Stack>
@@ -311,8 +301,7 @@ function DataTable() {
                                             '& .MuiTypography-root': {
                                                 fontSize: '13px',
                                             }
-                                        }}
-                                    >
+                                        }}>
                                         {filter.filterName} : {filter.filterVal}
                                         <IconButton onClick={() => deleteFilter(index)}><CloseIcon
                                             sx={{fontSize: '18px', color: 'white'}}/></IconButton>
@@ -328,26 +317,20 @@ function DataTable() {
                 sx={{
                     width: '100%',
                     overflow: 'hidden'
-                }}
-            >
+                }}>
                 <TableContainer
                     sx={{
                         maxHeight: 440
-                    }}
-                >
+                    }}>
                     <Table
                         stickyHeader
-                        aria-label="sticky table"
-                    >
+                        aria-label="sticky table">
                         <TableHead>
                             <TableRow
                                 sx={{
                                     position: 'relative'
-                                }}
-                            >
-                                <StyledTableCell
-                                    onClick={() => sortBy('id')}
-                                >
+                                }}>
+                                <StyledTableCell onClick={() => sortBy('id')}>
                                     ID
                                     <SortIcon
                                         sx={{
@@ -355,12 +338,9 @@ function DataTable() {
                                             position: 'relative',
                                             top: '4px',
                                             left: '2px'
-                                        }}
-                                    />
+                                        }}/>
                                 </StyledTableCell>
-                                <StyledTableCell
-                                    onClick={() => sortBy('first_name')}
-                                >
+                                <StyledTableCell onClick={() => sortBy('first_name')}>
                                     First Name
                                     <SortByAlphaIcon
                                         sx={{
@@ -368,12 +348,9 @@ function DataTable() {
                                             position: 'relative',
                                             top: '5px',
                                             left: '2px'
-                                        }}
-                                    />
+                                        }}/>
                                 </StyledTableCell>
-                                <StyledTableCell
-                                    onClick={() => sortBy('last_name')}
-                                >
+                                <StyledTableCell onClick={() => sortBy('last_name')}>
                                     Last Name
                                     <SortByAlphaIcon
                                         sx={{
@@ -381,12 +358,9 @@ function DataTable() {
                                             position: 'relative',
                                             top: '5px',
                                             left: '2px'
-                                        }}
-                                    />
+                                        }}/>
                                 </StyledTableCell>
-                                <StyledTableCell
-                                    onClick={() => sortBy('age')}
-                                >
+                                <StyledTableCell onClick={() => sortBy('age')}>
                                     Age
                                     <SortIcon
                                         sx={{
@@ -394,8 +368,10 @@ function DataTable() {
                                             position: 'relative',
                                             top: '5px',
                                             left: '2px'
-                                        }}
-                                    />
+                                        }}/>
+                                </StyledTableCell>
+                                <StyledTableCell>
+                                    Details
                                 </StyledTableCell>
                             </TableRow>
                         </TableHead>
@@ -410,8 +386,7 @@ function DataTable() {
                                                 spacing={4}
                                                 sx={{
                                                     padding: '100px 0 100px 0', width: '97vw'
-                                                }}
-                                            >
+                                                }}>
                                                 <CircularProgress
                                                     size={100}
                                                 />
@@ -419,8 +394,7 @@ function DataTable() {
                                                     variant={"h4"}
                                                     style={{
                                                         paddingLeft: '20px'
-                                                    }}
-                                                >
+                                                    }}>
                                                     Loading...
                                                 </Typography>
                                             </Stack>
@@ -434,22 +408,50 @@ function DataTable() {
                                         .map((user) => {
                                             return <StyledTableRow
                                                 key={user.id}
-                                                sx={{'&:last-child td, &:last-child th': {border: 0}}}
-                                            >
+                                                sx={{'&:last-child td, &:last-child th': {border: 0}}}>
                                                 <TableCell
                                                     component="th"
                                                     scope="row"
-                                                >
+                                                    sx={{
+                                                        paddingLeft: '20px'
+                                                    }}>
                                                     {user.id}
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell
+                                                    sx={{
+                                                        paddingLeft: '20px'
+                                                    }}>
                                                     {user.first_name}
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell
+                                                    sx={{
+                                                        paddingLeft: '20px'
+                                                    }}>
                                                     {user.last_name}
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell
+                                                    sx={{
+                                                        paddingLeft: '20px'
+                                                    }}>
                                                     {user.age}
+                                                </TableCell>
+                                                <TableCell
+                                                    sx={{
+                                                        padding: '0 0 0 5px'
+                                                    }}>
+                                                    <Stack direction={'row'}>
+                                                        <UserDetailModal
+                                                            firstName={user.first_name}
+                                                            lastName={user.last_name}
+                                                            age={user.age}>
+                                                            <InfoIcon/>
+                                                        </UserDetailModal>
+                                                            <Link to={`detail-page/${user.id}`}>
+                                                                <IconButton sx={{padding: '5px'}}>
+                                                                <ArticleIcon/>
+                                                                </IconButton>
+                                                            </Link>
+                                                    </Stack>
                                                 </TableCell>
                                             </StyledTableRow>
                                         })}
@@ -463,8 +465,7 @@ function DataTable() {
                     spacing={1}
                     sx={{
                         paddingBottom: '20px'
-                    }}
-                >
+                    }}>
                     <TablePagination
                         id={'tablePaginationRoot'}
                         rowsPerPageOptions={[5, 10, 25, 100]}
@@ -478,14 +479,12 @@ function DataTable() {
                             '& .MuiIconButton-root': {
                                 display: 'none',
                             }
-                        }}
-                    />
+                        }}/>
                     <Pagination
                         page={page + 1}
                         count={paginationNumberCount}
                         variant="outlined"
-                        onChange={handleChangePage}
-                    />
+                        onChange={handleChangePage}/>
                 </Stack>
             </Paper>
         </>
