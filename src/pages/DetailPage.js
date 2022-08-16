@@ -1,20 +1,40 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button} from "@mui/material";
-import {Link} from "react-router-dom";
+import {Link, useLocation, useParams} from "react-router-dom";
 import Typography from "@mui/material/Typography";
+import axios from "axios";
 
-function DetailPage(props) {
+function DetailPage() {
+    const dataURL = '/data/usersData.json';
+    const [user, setUser] = useState('');
+    const location = useLocation();
+    const id = Number(location.pathname.split('/')[location.pathname.split('/').length - 1]);
+    const params = useParams()
+    useEffect(() => {
+        getUser().then(() => console.log('ok'));
+        console.log(params)
+    }, []);
+
+    const getUser = async () => {
+        try {
+            let response = await axios.get(dataURL);
+            setUser(response.data.find(item => item.id === id));
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
         <>
             <Typography sx={{m: 2}} variant={"h3"}>Detail Page :</Typography>
             <Typography id="modal-modal-description" sx={{m: 3}}>
-                First Name : {props.firstName}
+                First Name : {user.first_name}
                 <br/>
-                Last Name : {props.lastName}
+                Last Name : {user.last_name}
                 <br/>
-                {props.firstName} was born in {2022 - Number(props.age)}.
+                {user.first_name} was born in {2022 - Number(user.age)}.
                 <br/>
-                He/she currently is {props.age} years old.
+                He/she currently is {user.age} years old.
             </Typography>
             <Link
                 to={'/'}

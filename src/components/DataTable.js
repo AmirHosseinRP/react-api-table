@@ -446,11 +446,11 @@ function DataTable() {
                                                             age={user.age}>
                                                             <InfoIcon/>
                                                         </UserDetailModal>
-                                                            <Link to={`detail-page/${user.id}`}>
-                                                                <IconButton sx={{padding: '5px'}}>
+                                                        <Link to={`detail-page/${user.id}`}>
+                                                            <IconButton sx={{padding: '5px'}}>
                                                                 <ArticleIcon/>
-                                                                </IconButton>
-                                                            </Link>
+                                                            </IconButton>
+                                                        </Link>
                                                     </Stack>
                                                 </TableCell>
                                             </StyledTableRow>

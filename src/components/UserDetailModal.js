@@ -23,7 +23,7 @@ export default function BasicModal(props) {
 
     return (
         <>
-            <IconButton sx={{padding:'5px'}} onClick={handleOpen}>
+            <IconButton sx={{padding: '5px'}} onClick={handleOpen}>
                 {props.children}
             </IconButton>
             <Modal
@@ -36,12 +36,12 @@ export default function BasicModal(props) {
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         User details :
                     </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                    <Typography id="modal-modal-description" sx={{mt: 2}}>
                         First Name : {props.firstName}
                         <br/>
                         Last Name : {props.lastName}
                         <br/>
-                        {props.firstName} was born in {2022-Number(props.age)}.
+                        {props.firstName} was born in {2022 - Number(props.age)}.
                         <br/>
                         He/she currently is {props.age} years old.
                     </Typography>
