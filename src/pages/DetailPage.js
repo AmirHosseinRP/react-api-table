@@ -18,6 +18,7 @@ function DetailPage() {
     const id = Number(params.id);
     useEffect(() => {
         getUser().then();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const getUser = async () => {
