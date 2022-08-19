@@ -13,7 +13,7 @@ import {
     MenuItem,
     Pagination,
     Paper,
-    Select,
+    Select, Slider,
     Stack,
     Switch,
     Table,
@@ -47,6 +47,7 @@ function DataTable() {
     const [filter, setFilter] = useState('');
     const [filterValue, setFilterValue] = useState('');
     const [isFilterSectionOpen, setIsFilterSectionOpen] = useState(false);
+    const [ageVal, setAgeVal] = useState([0, 100]);
     const [allFilters, setAllFilters] = useState([
         {
             filterName: 'first_name',
@@ -58,7 +59,8 @@ function DataTable() {
         },
         {
             filterName: 'age',
-            filterVal: '',
+            ageFromVal: 0,
+            ageToVal: 100,
         }
     ]);
 
@@ -131,10 +133,18 @@ function DataTable() {
 
     useEffect(() => {
         allFilters.forEach((i, index) => {
-            if (i.filterVal !== '') {
-                document.getElementById(`pillNum${index}`).style.display = 'block';
+            if (i.filterName !== 'age') {
+                if (i.filterVal !== '') {
+                    document.getElementById(`pillNum${index}`).style.display = 'block';
+                } else {
+                    document.getElementById(`pillNum${index}`).style.display = 'none';
+                }
             } else {
-                document.getElementById(`pillNum${index}`).style.display = 'none';
+                if (i.ageFromVal !== 0 || i.ageToVal !== 100) {
+                    document.getElementById(`pillNum${index}`).style.display = 'block';
+                } else {
+                    document.getElementById(`pillNum${index}`).style.display = 'none';
+                }
             }
         })
         fetchData();
@@ -148,7 +158,7 @@ function DataTable() {
                 setUsers(data.filter((user) => {
                     return user.first_name.toLowerCase().includes(allFilters[0].filterVal) &&
                         user.last_name.toLowerCase().includes(allFilters[1].filterVal) &&
-                        user.age.toLowerCase().includes(allFilters[2].filterVal);
+                        user.age >= allFilters[2].ageFromVal && user.age <= allFilters[2].ageToVal;
                 }))
             })
             .catch((error) => {
@@ -197,10 +207,23 @@ function DataTable() {
         setIsFilterSectionOpen((prev) => !prev);
     };
 
+    const handleAgeSlider = (event, newValue) => {
+        setAgeVal(newValue);
+    };
+
     const updateFilters = (value, index) => {
-        let newArr = [...allFilters];
-        newArr[index].filterVal = value;
-        setAllFilters(newArr);
+        if (index !== 2) {
+            let newArr = [...allFilters];
+            newArr[index].filterVal = value;
+            setAllFilters(newArr);
+        } else {
+            let newArr = [...allFilters];
+            newArr[index].ageFromVal = value[0];
+            newArr[index].ageToVal = value[1];
+            setAgeVal([0,100])
+            setAllFilters(newArr);
+        }
+        console.log(allFilters)
     }
 
     const filterData = () => {
@@ -209,16 +232,21 @@ function DataTable() {
         } else if (filter === 'last_name') {
             updateFilters(filterValue, 1);
         } else if (filter === 'age') {
-            updateFilters(filterValue, 2);
+            updateFilters(ageVal, 2);
         } else {
             alert('Select a Filter!')
         }
         setFilter('');
         setFilterValue('');
+        console.log(ageVal);
     };
 
-    const deleteFilter = (i) => {
-        updateFilters('', i);
+    const deleteFilter = (f,i) => {
+        if (f !== 'age') {
+            updateFilters('', i);
+        } else {
+            updateFilters([0,100], i);
+        }
         console.log(i, allFilters)
     }
 
@@ -277,12 +305,31 @@ function DataTable() {
                                 </MenuItem>
                             </Select>
                         </FormControl>
-                        <TextField
-                            label={`Search for ${filter}`}
-                            value={filterValue}
-                            onChange={handleSearchFiled}
-                            variant="outlined"
-                            size={"small"}/>
+                        {
+                            filter === 'age'
+                            &&
+                            <Slider
+                                getAriaLabel={() => 'Temperature range'}
+                                value={ageVal}
+                                sx={{
+                                    width:'40%',
+                                    position:'relative',
+                                    top:'5px'
+                                }}
+                                onChange={handleAgeSlider}
+                                valueLabelDisplay="auto"
+                            />
+                        }
+                        {
+                            (filter !== '' && filter !== 'age')
+                            &&
+                            <TextField
+                                label={`Search for ${filter}`}
+                                value={filterValue}
+                                onChange={handleSearchFiled}
+                                variant="outlined"
+                                size={"small"}/>
+                        }
                         <Button
                             variant={"contained"}
                             onClick={filterData}
@@ -302,8 +349,8 @@ function DataTable() {
                                                 fontSize: '13px',
                                             }
                                         }}>
-                                        {filter.filterName} : {filter.filterVal}
-                                        <IconButton onClick={() => deleteFilter(index)}><CloseIcon
+                                        {filter.filterName} : {filter.filterName !== 'age' ? filter.filterVal : `${filter.ageFromVal} - ${filter.ageToVal}`}
+                                        <IconButton onClick={() => deleteFilter(filter.filterName,index)}><CloseIcon
                                             sx={{fontSize: '18px', color: 'white'}}/></IconButton>
                                     </ListItemText>
 
