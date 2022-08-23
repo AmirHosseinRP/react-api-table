@@ -25,7 +25,7 @@ import {
     TablePagination,
     TableRow,
     TextField,
-    Typography
+    Typography,
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import InfoIcon from '@mui/icons-material/Info';
@@ -33,6 +33,10 @@ import ArticleIcon from '@mui/icons-material/Article';
 import {styled} from '@mui/material/styles';
 import UserDetailModal from './UserDetailModal'
 import {Link} from "react-router-dom";
+import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import {useTheme} from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 function DataTable() {
 
@@ -48,6 +52,9 @@ function DataTable() {
     const [filterValue, setFilterValue] = useState('');
     const [isFilterSectionOpen, setIsFilterSectionOpen] = useState(false);
     const [ageVal, setAgeVal] = useState([0, 100]);
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.up('sm'));
+
     const [allFilters, setAllFilters] = useState([
         {
             filterName: 'first_name',
@@ -220,7 +227,7 @@ function DataTable() {
             let newArr = [...allFilters];
             newArr[index].ageFromVal = value[0];
             newArr[index].ageToVal = value[1];
-            setAgeVal([0,100])
+            setAgeVal([0, 100])
             setAllFilters(newArr);
         }
         console.log(allFilters)
@@ -241,11 +248,11 @@ function DataTable() {
         console.log(ageVal);
     };
 
-    const deleteFilter = (f,i) => {
+    const deleteFilter = (f, i) => {
         if (f !== 'age') {
             updateFilters('', i);
         } else {
-            updateFilters([0,100], i);
+            updateFilters([0, 100], i);
         }
         console.log(i, allFilters)
     }
@@ -257,7 +264,7 @@ function DataTable() {
                     padding: '10px 0 10px 20px',
                     margin: '0 10px 10px 10px',
                     backgroundColor: '#ebebeb',
-                    borderRadius: '5px'
+                    borderRadius: '5px',
                 }}>
                 <FormControlLabel
                     control={
@@ -269,17 +276,13 @@ function DataTable() {
                 <Collapse
                     in={isFilterSectionOpen}>
                     <Stack
-                        direction={'row'}
+                        direction={matches ? "row" : "column"}
                         spacing={3}
                         sx={{
                             padding: '10px 10px 17px 10px',
-                            height: '39px'
+                            height: 'auto'
                         }}>
                         <FormControl
-                            fullWidth
-                            sx={{
-                                width: '25%'
-                            }}
                             size={"small"}>
                             <InputLabel
                                 id="demo-simple-select-label">
@@ -290,7 +293,8 @@ function DataTable() {
                                 id="demo-simple-select"
                                 value={filter}
                                 label="Filter"
-                                onChange={handleDropDownChange}>
+                                onChange={handleDropDownChange}
+                                sx={matches ? {width:'15vw'} : {width:'75vw'}}>
                                 <MenuItem
                                     value={'first_name'}>
                                     First Name
@@ -308,17 +312,17 @@ function DataTable() {
                         {
                             filter === 'age'
                             &&
-                            <Slider
-                                getAriaLabel={() => 'Temperature range'}
-                                value={ageVal}
-                                sx={{
-                                    width:'40%',
-                                    position:'relative',
-                                    top:'5px'
-                                }}
-                                onChange={handleAgeSlider}
-                                valueLabelDisplay="auto"
-                            />
+                            <Stack spacing={2} direction="row" sx={{mb: 1}} alignItems="center">
+                                <KeyboardArrowDownIcon/>
+                                <Slider
+                                    getAriaLabel={() => 'Temperature range'}
+                                    value={ageVal}
+                                    sx={matches ? {width:'200px'} : {width:'55vw'}}
+                                    onChange={handleAgeSlider}
+                                    valueLabelDisplay="auto"
+                                />
+                                <KeyboardDoubleArrowUpIcon/>
+                            </Stack>
                         }
                         {
                             (filter !== '' && filter !== 'age')
@@ -328,14 +332,13 @@ function DataTable() {
                                 value={filterValue}
                                 onChange={handleSearchFiled}
                                 variant="outlined"
-                                size={"small"}/>
+                                size={"small"}
+                                sx={matches ? {width:'200px'} : {width:'75vw'}}/>
                         }
                         <Button
                             variant={"contained"}
                             onClick={filterData}
-                            sx={{
-                                width: '10%'
-                            }}>
+                            sx={matches ? {width:'200px'} : {width:'75vw'}}>
                             Submit
                         </Button>
                     </Stack>
@@ -350,7 +353,7 @@ function DataTable() {
                                             }
                                         }}>
                                         {filter.filterName} : {filter.filterName !== 'age' ? filter.filterVal : `${filter.ageFromVal} - ${filter.ageToVal}`}
-                                        <IconButton onClick={() => deleteFilter(filter.filterName,index)}><CloseIcon
+                                        <IconButton onClick={() => deleteFilter(filter.filterName, index)}><CloseIcon
                                             sx={{fontSize: '18px', color: 'white'}}/></IconButton>
                                     </ListItemText>
 
@@ -367,7 +370,7 @@ function DataTable() {
                 }}>
                 <TableContainer
                     sx={{
-                        maxHeight: 440
+                        maxHeight: 440,
                     }}>
                     <Table
                         stickyHeader
@@ -375,7 +378,11 @@ function DataTable() {
                         <TableHead>
                             <TableRow
                                 sx={{
-                                    position: 'relative'
+                                    position: 'relative',
+                                    '& th': {
+                                        xs: {paddingInline: '9px'},
+                                        sm: {paddingInline: '20px'}
+                                    }
                                 }}>
                                 <StyledTableCell onClick={() => sortBy('id')}>
                                     ID
@@ -455,45 +462,57 @@ function DataTable() {
                                         .map((user) => {
                                             return <StyledTableRow
                                                 key={user.id}
-                                                sx={{'&:last-child td, &:last-child th': {border: 0}}}>
+                                                sx={{
+                                                    '&:last-child td, &:last-child th': {border: 0},
+                                                    '& td': {
+                                                        xs: {paddingInline: '9px'},
+                                                        sm: {paddingInline: '20px'}
+                                                    }
+                                                }}>
                                                 <TableCell
                                                     component="th"
                                                     scope="row"
                                                     sx={{
-                                                        paddingLeft: '20px'
+                                                        paddingLeft: '20px',
+                                                        width: {xs: '10px', sm: '100px'}
                                                     }}>
                                                     {user.id}
                                                 </TableCell>
                                                 <TableCell
                                                     sx={{
-                                                        paddingLeft: '20px'
+                                                        paddingLeft: '20px',
+                                                        width: {xs: '10px', sm: '100px'}
                                                     }}>
                                                     {user.first_name}
                                                 </TableCell>
                                                 <TableCell
                                                     sx={{
-                                                        paddingLeft: '20px'
+                                                        paddingLeft: {xm: 0, md: '20px'},
+                                                        width: {xs: '10px', sm: '100px'}
                                                     }}>
                                                     {user.last_name}
                                                 </TableCell>
                                                 <TableCell
                                                     sx={{
-                                                        paddingLeft: '20px'
+                                                        paddingLeft: '20px',
+                                                        width: {xs: '10px', sm: '100px'}
                                                     }}>
                                                     {user.age}
                                                 </TableCell>
                                                 <TableCell
                                                     sx={{
-                                                        padding: '0 0 0 5px'
+                                                        padding: '0 0 0 5px',
+                                                        width: {xs: '10px', sm: '100px'}
                                                     }}>
                                                     <Stack direction={'row'}>
                                                         <UserDetailModal
+                                                            id={user.id}
                                                             firstName={user.first_name}
                                                             lastName={user.last_name}
                                                             age={user.age}>
                                                             <InfoIcon/>
                                                         </UserDetailModal>
-                                                        <Link to={`detail-page/${user.id}`}>
+                                                        <Link to={`/detail-page?id=${user.id}`}>
                                                             <IconButton sx={{padding: '5px'}}>
                                                                 <ArticleIcon/>
                                                             </IconButton>
