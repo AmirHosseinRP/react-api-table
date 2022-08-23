@@ -439,7 +439,8 @@ function DataTable() {
                                                 alignItems="center"
                                                 spacing={4}
                                                 sx={{
-                                                    padding: '100px 0 100px 0', width: '97vw'
+                                                    padding: {xs:'0 0 0 -1vw',sm:'100px 0 100px 0'},
+                                                    width: {xs:'87vw',sm:'95vw'},
                                                 }}>
                                                 <CircularProgress
                                                     size={100}
