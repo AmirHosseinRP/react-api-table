@@ -230,7 +230,6 @@ function DataTable() {
             setAgeVal([0, 100])
             setAllFilters(newArr);
         }
-        console.log(allFilters)
     }
 
     const filterData = () => {
@@ -245,7 +244,6 @@ function DataTable() {
         }
         setFilter('');
         setFilterValue('');
-        console.log(ageVal);
     };
 
     const deleteFilter = (f, i) => {
@@ -254,7 +252,6 @@ function DataTable() {
         } else {
             updateFilters([0, 100], i);
         }
-        console.log(i, allFilters)
     }
 
     return (
