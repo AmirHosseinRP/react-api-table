@@ -44,6 +44,7 @@ function DataTable() {
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [rowsPerPageOptions, setRowsPerPageOptions] = useState([10, 25, 50, 100]);
     const [paginationNumberCount, setPaginationNumberCount] = useState();
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -54,6 +55,7 @@ function DataTable() {
     const [ageVal, setAgeVal] = useState([0, 100]);
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.up('sm'));
+    const [tempRows, setTempRows] = useState(10);
 
     const [allFilters, setAllFilters] = useState([
         {
@@ -123,6 +125,8 @@ function DataTable() {
     useEffect(() => {
         document.getElementById('tablePaginationRoot')
             .getElementsByTagName('p')[0].innerHTML = 'Records per page:';
+        document.getElementById('tablePaginationRoot')
+            .getElementsByTagName('input')[0].value = 'aaaa';
     }, [])
 
     useEffect(() => {
@@ -181,6 +185,9 @@ function DataTable() {
         setRowsPerPage(event.target.value);
         setPaginationNumberCount(100 / event.target.value)
         setPage(0);
+        setTempRows(event.target.value);
+        setRowsPerPageOptions([10, 25, 50, 100]);
+        document.getElementById('tableContainer').scrollTop = 0;
     };
 
     const sortBy = (val) => {
@@ -254,6 +261,21 @@ function DataTable() {
         }
     }
 
+    const scrollHandle = (event) => {
+        if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight - 1 && rowsPerPage + tempRows <= users.length) {
+            setIsLoading(true);
+            setTimeout(() => {
+                setRowsPerPage(rowsPerPage + tempRows);
+                setIsLoading(false);
+                if (document.getElementById('tablePaginationRoot')
+                    .getElementsByTagName('span')[0].className === "notranslate") {
+                    document.getElementById('tablePaginationRoot')
+                        .getElementsByTagName('span')[0].innerHTML = 'custom';
+                }
+            }, 200);
+        }
+    }
+
     return (
         <>
             <Box
@@ -291,7 +313,7 @@ function DataTable() {
                                 value={filter}
                                 label="Filter"
                                 onChange={handleDropDownChange}
-                                sx={matches ? {width:'15vw'} : {width:'75vw'}}>
+                                sx={matches ? {width: '15vw'} : {width: '75vw'}}>
                                 <MenuItem
                                     value={'first_name'}>
                                     First Name
@@ -314,7 +336,7 @@ function DataTable() {
                                 <Slider
                                     getAriaLabel={() => 'Temperature range'}
                                     value={ageVal}
-                                    sx={matches ? {width:'200px'} : {width:'55vw'}}
+                                    sx={matches ? {width: '200px'} : {width: '55vw'}}
                                     onChange={handleAgeSlider}
                                     valueLabelDisplay="auto"
                                 />
@@ -330,12 +352,12 @@ function DataTable() {
                                 onChange={handleSearchFiled}
                                 variant="outlined"
                                 size={"small"}
-                                sx={matches ? {width:'200px'} : {width:'75vw'}}/>
+                                sx={matches ? {width: '200px'} : {width: '75vw'}}/>
                         }
                         <Button
                             variant={"contained"}
                             onClick={filterData}
-                            sx={matches ? {width:'200px'} : {width:'75vw'}}>
+                            sx={matches ? {width: '200px'} : {width: '75vw'}}>
                             Submit
                         </Button>
                     </Stack>
@@ -368,7 +390,9 @@ function DataTable() {
                 <TableContainer
                     sx={{
                         maxHeight: 440,
-                    }}>
+                    }}
+                    onScroll={scrollHandle}
+                    id={'tableContainer'}>
                     <Table
                         stickyHeader
                         aria-label="sticky table">
@@ -436,8 +460,8 @@ function DataTable() {
                                                 alignItems="center"
                                                 spacing={4}
                                                 sx={{
-                                                    padding: {xs:'0 0 0 -1vw',sm:'100px 0 100px 0'},
-                                                    width: {xs:'87vw',sm:'95vw'},
+                                                    padding: {xs: '0 0 0 -1vw', sm: '100px 0 100px 0'},
+                                                    width: {xs: '87vw', sm: '95vw'},
                                                 }}>
                                                 <CircularProgress
                                                     size={100}
@@ -532,7 +556,7 @@ function DataTable() {
                     }}>
                     <TablePagination
                         id={'tablePaginationRoot'}
-                        rowsPerPageOptions={[5, 10, 25, 100]}
+                        rowsPerPageOptions={rowsPerPageOptions}
                         component="div"
                         count={users.length}
                         rowsPerPage={rowsPerPage}
